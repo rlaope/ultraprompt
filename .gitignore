@@ -1,0 +1,10 @@
+# Local lab area — case runs, traces, working notes are not published.
+# The open-source repo ships only the English skill sets and README.
+based/
+
+# OMC / Claude Code operational state
+.omc/
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
