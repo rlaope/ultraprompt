@@ -1,0 +1,8 @@
+{
+  "name": "ultraprompt",
+  "description": "Eight axis-sliced strategy skills distilled from frontier-model reasoning traces — exploration, hypothesis management, verification, trade-offs, failure enumeration, self-correction, spec fidelity, incremental safety.",
+  "version": "0.1.0",
+  "author": {
+    "name": "rlaope"
+  }
+}

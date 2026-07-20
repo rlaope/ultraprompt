@@ -1,0 +1,14 @@
+{
+  "name": "ultraprompt",
+  "owner": {
+    "name": "rlaope"
+  },
+  "plugins": [
+    {
+      "name": "ultraprompt",
+      "source": "./",
+      "description": "Eight axis-sliced strategy skills distilled from frontier-model reasoning traces.",
+      "version": "0.1.0"
+    }
+  ]
+}

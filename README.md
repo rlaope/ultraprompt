@@ -50,27 +50,32 @@ Every skill follows the same template (`skills/_TEMPLATE.md`):
 - **Worked example** — one compact scenario applying the loop end-to-end; an illustrative construction until a real trace replaces it.
 - **Trace evidence** — citations of the case runs where the pattern was observed, with what the model did at that point. (Empty in v0.1; see Status.)
 
-## Using the skills
+## Install
 
-These are prompts, not code. There is nothing to install, build, or execute. Three ways to load one:
+These are prompts, not code — there is nothing to build or execute. Install them one of three ways.
 
-**Claude Code, user-level** — available in every project:
+**Claude Code plugin** — adds the marketplace and installs every skill:
 
-```
-mkdir -p ~/.claude/skills/verification-discipline
-cp skills/verification-discipline/SKILL.md ~/.claude/skills/verification-discipline/SKILL.md
-```
-
-**Claude Code, project-level** — versioned with the repo it applies to:
+<!-- needs-verification: plugin/marketplace command form and manifest schema (.claude-plugin/marketplace.json, plugin.json) unverified on a clean machine; confirm `ultraprompt@ultraprompt` resolves once the repo is public. -->
 
 ```
-mkdir -p .claude/skills/verification-discipline
-cp skills/verification-discipline/SKILL.md .claude/skills/verification-discipline/SKILL.md
+/plugin marketplace add rlaope/ultraprompt
+/plugin install ultraprompt@ultraprompt
 ```
 
-**Any other agent** — paste the body of a `SKILL.md` into the system prompt, or include it in the `system` parameter of an API call. The skills are self-contained English text with no Claude Code-specific syntax in their operative sections.
+**One-line install** — clones the repo and symlinks every skill into `~/.claude/skills/`:
 
-Load the axes you need, not all eight. Each skill is written to be independent; stacking all of them inflates the context for little marginal gain on a task that only stresses one or two axes.
+```sh
+curl -fsSL https://raw.githubusercontent.com/rlaope/ultraprompt/main/install.sh | sh
+```
+
+**No terminal?** Just tell your coding agent:
+
+```text
+hey, install this: https://github.com/rlaope/ultraprompt
+```
+
+Load the axes you need, not all eight — each skill is independent, and stacking all of them inflates context for little gain on a task that stresses only one or two. For agents other than Claude Code, paste the body of a `SKILL.md` into the system prompt (or the `system` parameter of an API call); the skills are self-contained English with no Claude Code-specific syntax in their operative sections.
 
 ## Status
 
