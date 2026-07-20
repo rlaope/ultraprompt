@@ -38,6 +38,19 @@ Skills are organized by **strategy, not domain**. A collaborative kanban board a
 
 The axes are deliberately orthogonal: each names a distinct decision the model makes during a session, and any single case run gets scored on all eight. A debugging case might contribute strong evidence to `hypothesis-management` and `self-correction-loop` while saying nothing about `tradeoff-articulation`; a greenfield design case contributes the reverse. Coverage of each axis therefore accumulates from many cases, not from one designated "exploration case".
 
+### Draft axes (v0.1 — awaiting trace evidence)
+
+Four candidate axes distilled via the [`_SIMULATION.md`](_SIMULATION.md) protocol (run a real Fable 5 session on a representative task, capture the trace, distill the strategy). They are honest drafts: each stays `v0.1 baseline draft` until at least one real trace-evidence row lands in its `CASES.md`, and a candidate that cannot show evidence distinct from the core eight gets absorbed, not shipped.
+
+| Skill | What it encodes |
+|---|---|
+| [state-probing](skills/state-probing/SKILL.md) | Probing the actual runtime/environment state — versions, processes, git truth — before acting on assumptions. |
+| [honest-reporting](skills/honest-reporting/SKILL.md) | Calibrating claims to evidence: verified vs should-work, marking the unmeasured as open, reporting failures plainly. |
+| [delegation-parallelism](skills/delegation-parallelism/SKILL.md) | When to split work across agents or sessions vs doing it inline — independence tests, disjoint scopes, coordination cost. |
+| [context-memory-hygiene](skills/context-memory-hygiene/SKILL.md) | What to load, persist, and drop across turns and sessions; handoffs without context pollution. |
+
+These are co-developed in [maestro-ultra](https://github.com/animepics/maestro-ultra) (the authoring working copy, where the conductor exercises them) and published here as the upstream home.
+
 ### What a SKILL.md contains
 
 Every skill follows the same template (`skills/_TEMPLATE.md`):
@@ -79,7 +92,7 @@ Load the axes you need, not all eight — each skill is independent, and stackin
 
 ## Status
 
-**v0.1 — baseline drafts.** All eight skills exist as structured drafts derived from the case catalog and the axis definitions. No case runs have been executed yet; the trace-evidence sections in each `SKILL.md` are placeholders and will be filled in as runs land, one batch at a time (first batch: 8 cases, one per axis-representative domain). Until then, treat the skills as informed hypotheses about frontier-model strategy, not measured findings. Wording will change as evidence accumulates; axis boundaries are expected to hold.
+**v0.1 — baseline drafts.** The core eight skills exist as structured drafts derived from the case catalog and the axis definitions. No case runs have been executed yet; the trace-evidence sections in each `SKILL.md` are placeholders and will be filled in as runs land, one batch at a time (first batch: 8 cases, one per axis-representative domain). Until then, treat the skills as informed hypotheses about frontier-model strategy, not measured findings. Wording will change as evidence accumulates; axis boundaries are expected to hold. The four draft axes above follow the same bar via `_SIMULATION.md`: no trace row, no promotion.
 
 ## Repository structure
 
