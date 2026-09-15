@@ -1,14 +1,26 @@
 {
   "name": "ultraprompt",
   "owner": {
-    "name": "rlaope"
+    "name": "rlaope",
+    "url": "https://github.com/rlaope"
   },
+  "description": "Strategy skills targeting Claude Fable 5.1 reasoning patterns (baseline drafts; trace evidence pending).",
   "plugins": [
     {
       "name": "ultraprompt",
       "source": "./",
-      "description": "Eight axis-sliced strategy skills distilled from frontier-model reasoning traces.",
-      "version": "0.1.0"
+      "description": "Twelve strategy skills (eight core axes + four drafts) targeting Claude Fable 5.1 reasoning patterns, for Claude Code and any agent that reads a system prompt. v0.2 baseline drafts; trace evidence pending.",
+      "version": "0.2.0",
+      "homepage": "https://github.com/rlaope/ultraprompt",
+      "repository": "https://github.com/rlaope/ultraprompt",
+      "keywords": [
+        "skills",
+        "prompting",
+        "coding-agent",
+        "reasoning",
+        "fable-5.1"
+      ],
+      "category": "productivity"
     }
   ]
 }

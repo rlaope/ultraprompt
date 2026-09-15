@@ -1,0 +1,44 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate skills against the authoring contract
+        run: sh scripts/validate-skills.sh
+      - name: Installer smoke test (link + uninstall, isolated HOME)
+        run: |
+          export HOME="$(mktemp -d)"
+          sh install.sh
+          test -L "$HOME/.claude/skills/exploration-strategy"
+          test "$(ls "$HOME/.claude/skills" | wc -l)" -eq "$(ls -d skills/*/ | wc -l)"
+          sh install.sh --uninstall
+          test -z "$(ls -A "$HOME/.claude/skills")"
+      - name: Installer smoke test (copy mode)
+        run: |
+          export HOME="$(mktemp -d)"
+          sh install.sh --copy
+          test -f "$HOME/.claude/skills/state-probing/.ultraprompt-managed"
+          test "$(ls "$HOME/.claude/skills" | wc -l)" -eq "$(ls -d skills/*/ | wc -l)"
+          sh install.sh --uninstall
+          test -z "$(ls -A "$HOME/.claude/skills")"
+      - name: Installer smoke test (uninstall from a different location than install)
+        run: |
+          export HOME="$(mktemp -d)"
+          sh install.sh
+          cp install.sh "$HOME/install-elsewhere.sh"
+          (cd "$HOME" && ULTRAPROMPT_DIR="$HOME/nonexistent" sh install-elsewhere.sh --uninstall)
+          test -z "$(ls -A "$HOME/.claude/skills")"

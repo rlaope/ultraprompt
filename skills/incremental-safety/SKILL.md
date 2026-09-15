@@ -4,7 +4,7 @@ description: Decompose a large or risky change into a sequence of independently 
 ---
 # Incremental Safety
 
-> Status: v0.1 baseline draft — derived from the case catalog and axis definitions; awaiting trace evidence from Fable 5 case runs.
+> Status: v0.1 baseline draft — derived from the case catalog and axis definitions; awaiting trace evidence from Fable 5.1 case runs.
 
 ## When to apply
 

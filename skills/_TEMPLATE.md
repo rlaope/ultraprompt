@@ -8,7 +8,7 @@ description: <one line — when an agent should invoke this skill>
 # <Human Title>
 <!-- Title the STRATEGY, not the domain. "Hypothesis Management", not "Debugging Python". -->
 
-> Status: v0.1 baseline draft — derived from the case catalog and axis definitions; awaiting trace evidence from Fable 5 case runs.
+> Status: v0.1 baseline draft — derived from the case catalog and axis definitions; awaiting trace evidence from Fable 5.1 case runs.
 <!-- Keep this line verbatim until at least one trace-evidence row is real; then bump version and reword to reflect the evidence. -->
 
 ## When to apply
@@ -66,12 +66,18 @@ Exit: <which stop condition fired and what evidence closed the loop>.
 AUTHORING RULES (delete this block in real skill files):
 - English only. Direct, dense, zero marketing fluff.
 - 120-220 lines per finished skill file.
-- The quality test: pasting this file into an Opus system prompt should measurably
-  change how it works on a matching task. If a section wouldn't change behavior, cut it.
-- Skills map 1:1 to the 8 strategy axes in based/CASES.md:
-  exploration-strategy, hypothesis-management, verification-discipline,
-  tradeoff-articulation, failure-mode-enumeration, self-correction-loop,
-  spec-to-code-fidelity, incremental-safety.
+- The quality test: pasting this file into the system prompt of a weaker agent (Claude Opus 5,
+  Sonnet 5, a GPT-class or open-weight model) should measurably change how it works on a
+  matching task. If a section wouldn't change behavior, cut it.
+- Skills map 1:1 to strategy axes. Core eight: exploration-strategy,
+  hypothesis-management, verification-discipline, tradeoff-articulation,
+  failure-mode-enumeration, self-correction-loop, spec-to-code-fidelity,
+  incremental-safety. Drafts (per _SIMULATION.md): state-probing, honest-reporting,
+  delegation-parallelism, context-memory-hygiene. A new axis goes through
+  _SIMULATION.md first; prefer absorbing into an existing axis over adding.
+- Every skills/<name>/ ships SKILL.md AND CASES.md (trace-evidence log). Copy the
+  CASES.md shape from any existing skill; never invent a row.
+- Run scripts/validate-skills.sh before opening a PR; CI runs the same check.
 - Optional strategy-specific sections (a checklist, a selection guide) may be
   inserted between the core sections when the strategy needs them; the core
   sections above and their order stay fixed.

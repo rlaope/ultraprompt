@@ -1,8 +1,19 @@
 {
   "name": "ultraprompt",
-  "description": "Eight axis-sliced strategy skills distilled from frontier-model reasoning traces — exploration, hypothesis management, verification, trade-offs, failure enumeration, self-correction, spec fidelity, incremental safety.",
-  "version": "0.1.0",
+  "description": "Twelve strategy skills (eight core axes + four drafts) targeting the reasoning patterns of Claude Fable 5.1 — exploration, hypothesis management, verification, trade-offs, failure enumeration, self-correction, spec fidelity, incremental safety, state probing, honest reporting, delegation, context hygiene — for Opus, GPT, and open-weight coding agents. v0.2 baseline drafts; trace evidence pending.",
+  "version": "0.2.0",
   "author": {
-    "name": "rlaope"
-  }
+    "name": "rlaope",
+    "url": "https://github.com/rlaope"
+  },
+  "homepage": "https://github.com/rlaope/ultraprompt",
+  "repository": "https://github.com/rlaope/ultraprompt",
+  "keywords": [
+    "skills",
+    "prompting",
+    "coding-agent",
+    "reasoning",
+    "fable-5.1",
+    "claude-code"
+  ]
 }
