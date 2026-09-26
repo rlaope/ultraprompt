@@ -20,6 +20,8 @@ This document is the protocol; `_TEMPLATE.md` is the shape the output must take.
 3. **Capture the reasoning trace.**
    Record the event trace: what the agent observed, what it decided, where it corrected, what it verified.
    Store it as case evidence. The trace — not your recollection of it — is what a `CASES.md` row cites.
+   Run `python3 tools/extract_trace.py <session>.jsonl`: it writes the normalized trace to `based/traces/`
+   (local, never published) and prints `<session-id>@<digest12>`, the exact value for the row's Session cell.
 
 4. **Distill the strategy axis (strategy, not domain).**
    Extract the repeating decision pattern and name it as a *strategy* that transfers across domains, never
@@ -77,4 +79,5 @@ This document is the protocol; `_TEMPLATE.md` is the shape the output must take.
 - The mirror push is an owner-approval gate: drafting is autonomous; landing a skill here waits for the
   maintainer's review (a pull request against `main`).
 - Every change landing here must pass `scripts/validate-skills.sh` (run in CI): frontmatter, section order,
-  status line, line budget, and a `CASES.md` next to every `SKILL.md`.
+  status line, line budget, a `CASES.md` next to every `SKILL.md`, and every `CASES.md` row citing an
+  extracted trace as `<session-id>@<digest12>` (`tools/check_cases.py`; digest-checked when `based/traces/` exists).
