@@ -94,8 +94,10 @@ if command -v python3 >/dev/null 2>&1; then
     mv="$(python3 -c "import json; print(json.load(open('.claude-plugin/marketplace.json'))['plugins'][0].get('version',''))" 2>/dev/null)"
     [ -n "$pv" ] && [ "$pv" = "$mv" ] || err "manifests" "plugin.json version ($pv) != marketplace.json plugin version ($mv)"
   fi
+  # --- CASES.md rows must cite an extracted trace (tools/check_cases.py) ---
+  python3 tools/check_cases.py || err "CASES.md" "evidence rows failed the trace-citation check (see FAIL lines above)"
 else
-  err "manifests" "python3 not found; manifest JSON checks could not run"
+  err "manifests" "python3 not found; manifest JSON and CASES.md trace checks could not run"
 fi
 
 echo "checked $skills skills"

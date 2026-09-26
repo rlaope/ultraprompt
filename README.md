@@ -106,7 +106,7 @@ The skills are self-contained English with no Claude Code-specific syntax in the
 
 - Author or change a skill against `skills/_TEMPLATE.md`; new axes go through `_SIMULATION.md` first.
 - Run `sh scripts/validate-skills.sh` before opening a pull request. It checks frontmatter, the verbatim status line, section order, the 120-220 line budget, template leftovers, README links, and manifest version parity. CI runs the same script plus an installer smoke test on every push and pull request.
-- Never invent a trace-evidence row. `CASES.md` rows come from real sessions only.
+- Never invent a trace-evidence row. `CASES.md` rows come from real sessions only: run `python3 tools/extract_trace.py <session>.jsonl` on the Claude Code transcript (`~/.claude/projects/<project>/<session>.jsonl`), which writes the normalized trace to the gitignored `based/traces/` and prints `<session-id>@<digest12>` for the row's Session cell. `tools/check_cases.py` (run by the validator) rejects any row without that citation, and, where `based/traces/` exists, any row whose trace is missing or no longer matches its digest.
 
 ## Repository structure
 
@@ -118,7 +118,11 @@ ultraprompt/
 ├── install.sh                     # one-line installer: link/copy skills into ~/.claude/skills, --uninstall
 ├── scripts/
 │   └── validate-skills.sh         # authoring-contract checks (run locally and in CI)
-├── .github/workflows/validate.yml # CI: validate-skills + installer smoke test
+├── tools/                         # trace tooling, Python 3 stdlib only (does not ship with the skills)
+│   ├── extract_trace.py           # session .jsonl -> normalized trace + <session-id>@<digest12> citation
+│   ├── check_cases.py             # every CASES.md row must cite a real, unmodified trace
+│   └── tests/                     # unittest + synthetic transcript fixture
+├── .github/workflows/validate.yml # CI: validate-skills + tool tests + installer smoke test
 ├── .claude-plugin/
 │   ├── plugin.json                # Claude Code plugin manifest
 │   └── marketplace.json           # single-plugin marketplace pointing at this repo root
@@ -142,6 +146,7 @@ ultraprompt/
 │   ├── CASES.md                   # case catalog: ~16 domains, difficulty, axis mapping
 │   ├── TRACING.md                 # guide for extracting traces from session transcripts
 │   ├── templates/trace-note.md    # per-run trace note template (per-axis observation grid)
+│   ├── traces/<session-id>.json   # normalized traces written by tools/extract_trace.py
 │   └── cases/<id>/                # future: one dir per case run — prompt, artifacts, trace notes
 └── .gitignore                     # excludes based/ and operational state
 ```

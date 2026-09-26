@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate skills against the authoring contract
         run: sh scripts/validate-skills.sh
+      - name: Trace tooling unit tests
+        run: python3 -m unittest discover -s tools/tests -v
       - name: Installer smoke test (link + uninstall, isolated HOME)
         run: |
           export HOME="$(mktemp -d)"

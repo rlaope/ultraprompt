@@ -76,7 +76,8 @@ AUTHORING RULES (delete this block in real skill files):
   delegation-parallelism, context-memory-hygiene. A new axis goes through
   _SIMULATION.md first; prefer absorbing into an existing axis over adding.
 - Every skills/<name>/ ships SKILL.md AND CASES.md (trace-evidence log). Copy the
-  CASES.md shape from any existing skill; never invent a row.
+  CASES.md shape from any existing skill; never invent a row. The Session cell is
+  the <session-id>@<digest12> printed by tools/extract_trace.py.
 - Run scripts/validate-skills.sh before opening a PR; CI runs the same check.
 - Optional strategy-specific sections (a checklist, a selection guide) may be
   inserted between the core sections when the strategy needs them; the core

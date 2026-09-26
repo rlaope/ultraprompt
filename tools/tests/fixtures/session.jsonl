@@ -1,0 +1,11 @@
+{"type":"summary","summary":"synthetic fixture","leafUuid":"u6"}
+{"type":"user","uuid":"u1","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:00Z","message":{"role":"user","content":"fix the failing test"}}
+{"type":"user","uuid":"u1b","isMeta":true,"sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:00Z","message":{"role":"user","content":"<local-command-caveat>ignored</local-command-caveat>"}}
+{"type":"assistant","uuid":"u2","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:01Z","message":{"role":"assistant","model":"claude-fable-5-1","content":[{"type":"thinking","thinking":"reproduce first","signature":"x"}]}}
+{"type":"assistant","uuid":"u3","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:02Z","message":{"role":"assistant","model":"claude-fable-5-1","content":[{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"pytest -x"}}]}}
+{"type":"user","uuid":"u4","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:03Z","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"t1","is_error":true,"content":[{"type":"text","text":"1 failed"}]}]}}
+{"type":"assistant","uuid":"u3","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:02Z","message":{"role":"assistant","model":"claude-fable-5-1","content":[{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"pytest -x"}}]}}
+not json at all
+{"type":"assistant","uuid":"u5","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:04Z","isSidechain":true,"message":{"role":"assistant","model":"claude-fable-5-1","content":[{"type":"tool_use","id":"t2","name":"Edit","input":{"file_path":"a.py","old_string":"-","new_string":"+"}}]}}
+{"type":"user","uuid":"u6","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:05Z","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"t2","content":"ok"}]}}
+{"type":"assistant","uuid":"u7","sessionId":"0000aaaa-fixture","timestamp":"2026-09-27T00:00:06Z","message":{"role":"assistant","model":"claude-fable-5-1","content":[{"type":"text","text":"Fixed; pytest passes."}]}}

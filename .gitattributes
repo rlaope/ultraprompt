@@ -1,0 +1,4 @@
+# Shell scripts are install/CI glue; keep them out of GitHub's language stats.
+*.sh linguist-detectable=false
+# POSIX sh breaks on CRLF.
+*.sh text eol=lf
