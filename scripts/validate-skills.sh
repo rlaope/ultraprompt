@@ -16,7 +16,9 @@ SECTIONS='## When to apply
 ## Trace evidence'
 MIN_LINES=120
 MAX_LINES=220
-MAX_DESC=1536        # Claude Code frontmatter budget for description (+ when_to_use)
+MAX_DESC=1024        # Agent Skills spec cap (claude.ai uploads, Skills API); Claude Code's listing cap is 1,536
+MAX_NAME=64          # Agent Skills spec: 1-64 chars, a-z 0-9 and '-', no leading/trailing '-'
+SPEC_KEYS='name description license compatibility metadata allowed-tools'
 EXPECTED_SKILLS=12   # 8 core + 4 draft; README, CHANGELOG and both manifests hardcode "twelve"
 
 fail=0
@@ -39,10 +41,15 @@ for dir in skills/*/; do
   [ "$(awk 'NR>1 && /^---$/ {print NR; exit}' "$f")" != "" ] || err "$name" "frontmatter block is never closed with '---'"
   fm_name="$(awk 'NR>1 && /^---$/ {exit} /^name:/ {sub(/^name:[ \t]*/, ""); print}' "$f")"
   [ "$fm_name" = "$name" ] || err "$name" "frontmatter name '$fm_name' does not match directory name"
+  printf '%s' "$name" | grep -qE '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$' && [ "${#name}" -le "$MAX_NAME" ] \
+    || err "$name" "name must be 1-$MAX_NAME chars of a-z, 0-9 and '-', not starting or ending with '-' (Agent Skills spec)"
+  for key in $(awk 'NR>1 && /^---$/ {exit} NR>1 && /^[A-Za-z_-]+:/ {sub(/:.*/, ""); print}' "$f"); do
+    case " $SPEC_KEYS " in *" $key "*) ;; *) err "$name" "frontmatter key '$key' is outside the Agent Skills spec (claude.ai uploads and the Skills API reject it)" ;; esac
+  done
   fm_desc="$(awk 'NR>1 && /^---$/ {exit} /^description:/ {sub(/^description:[ \t]*/, ""); print}' "$f")"
   [ -n "$fm_desc" ] || err "$name" "frontmatter description is empty"
-  dlen="$(printf '%s' "$fm_desc" | wc -c | tr -d ' ')"
-  [ "$dlen" -le "$MAX_DESC" ] || err "$name" "description is $dlen bytes (> $MAX_DESC)"
+  dlen="$(printf '%s' "$fm_desc" | wc -m | tr -d ' ')"
+  [ "$dlen" -le "$MAX_DESC" ] || err "$name" "description is $dlen characters (> $MAX_DESC)"
 
   # --- status line (verbatim, per _SIMULATION.md quality bar) ---
   grep -qxF "$STATUS_LINE" "$f" || err "$name" "status line missing or not verbatim (check model name / wording against _SIMULATION.md)"
@@ -93,6 +100,8 @@ if command -v python3 >/dev/null 2>&1; then
     pv="$(python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json')).get('version',''))" 2>/dev/null)"
     mv="$(python3 -c "import json; print(json.load(open('.claude-plugin/marketplace.json'))['plugins'][0].get('version',''))" 2>/dev/null)"
     [ -n "$pv" ] && [ "$pv" = "$mv" ] || err "manifests" "plugin.json version ($pv) != marketplace.json plugin version ($mv)"
+    lic="$(python3 -c "import json; print(json.load(open('.claude-plugin/plugin.json')).get('license',''))" 2>/dev/null)"
+    [ -n "$lic" ] && [ -f LICENSE ] || err "manifests" "plugin.json 'license' and a LICENSE file are both required (the plugin directory refuses a plugin without one)"
   fi
   # --- CASES.md rows must cite an extracted trace (tools/check_cases.py) ---
   python3 tools/check_cases.py || err "CASES.md" "evidence rows failed the trace-citation check (see FAIL lines above)"

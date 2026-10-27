@@ -5,8 +5,10 @@
     python3 tools/check_cases.py --traces based/traces --require-traces
 
 A real row's Session cell must be `<session-id>@<digest12>` as printed by extract_trace.py.
-When the trace directory is present, the cited file must exist and its events must still
-hash to the cited digest. CI has no traces (they are gitignored), so it checks format only.
+When the trace directory is present, the cited file must exist, its events must still
+hash to the cited digest, and (schema 2) at least one assistant turn must come from the
+source model in trace.SOURCE_MODELS. CI has no traces (they are gitignored), so it checks
+format only.
 Exit 1 on any failure. Stdlib only.
 """
 import argparse
@@ -68,13 +70,16 @@ def check_file(path, traces_dir):
             t = trace.load(tpath)
             actual = trace.digest(t.get("events", []))
             stored = t.get("digest", "")
-            cache[tpath] = actual if actual == stored else None
-        actual = cache[tpath]
+            cache[tpath] = (actual if actual == stored else None, trace.source_model_turns(t))
+        actual, source_turns = cache[tpath]
         if actual is None:
             errs.append("%s: %s was edited after extraction (stored digest != events)" % (where, tpath))
         elif not actual.startswith(cited):
             errs.append("%s: cites digest %s but %s hashes to %s"
                         % (where, cited, tpath, actual[: trace.DIGEST_LEN]))
+        elif source_turns == 0:
+            errs.append("%s: %s has no assistant turn from %s (case runs must be on the source model)"
+                        % (where, tpath, ", ".join(trace.SOURCE_MODELS)))
     if real and placeholder:
         errs.append("%s: placeholder row still present next to %d real row(s)" % (path, real))
     return errs, real

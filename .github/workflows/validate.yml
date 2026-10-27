@@ -21,6 +21,18 @@ jobs:
         run: sh scripts/validate-skills.sh
       - name: Trace tooling unit tests
         run: python3 -m unittest discover -s tools/tests -v
+      - name: Plugin manifest (claude plugin validate --strict)
+        run: |
+          export HOME="$(mktemp -d)"
+          npx --yes @anthropic-ai/claude-code@2.1.311 plugin validate . --strict
+      - name: Installer smoke test (Agent Skills directory via CLAUDE_SKILLS_DIR)
+        run: |
+          export HOME="$(mktemp -d)"
+          CLAUDE_SKILLS_DIR="$HOME/.agents/skills" sh install.sh
+          test -L "$HOME/.agents/skills/verification-discipline"
+          test ! -e "$HOME/.claude/skills"
+          CLAUDE_SKILLS_DIR="$HOME/.agents/skills" sh install.sh --uninstall
+          test -z "$(ls -A "$HOME/.agents/skills")"
       - name: Installer smoke test (link + uninstall, isolated HOME)
         run: |
           export HOME="$(mktemp -d)"

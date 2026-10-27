@@ -2,7 +2,7 @@
 
 Portable strategy skills for coding agents, to be distilled from the reasoning traces of a frontier coding model. (v0.2: baseline drafts, trace evidence pending — see [Status](#status) for what has actually landed.)
 
-The pipeline: run a broad set of coding cases — frontend state machines, high-traffic backends, ML training loops, kernel optimization and quantization, agentic harnesses, low-level Linux — on **Claude Fable 5.1** via Claude Code; extract from the session transcripts how the model actually solves problems: what it explores first, how many hypotheses it keeps alive, what it accepts as evidence of "done", when it abandons an approach; distill those recurring strategies into English skill prompts that make a weaker agent — Claude Opus 5, Sonnet 5, Haiku 4.5, a GPT-class model, an open-weight model, anything that reads a system prompt — reason more like the stronger one. The output is not code. It is a set of carefully written prompts, to be grounded in trace evidence as case runs land.
+The pipeline: run a broad set of coding cases — frontend state machines, high-traffic backends, ML training loops, kernel optimization and quantization, agentic harnesses, low-level Linux — on **Claude Fable 5.1** via Claude Code; extract from the session transcripts how the model actually solves problems: what it explores first, how many hypotheses it keeps alive, what it accepts as evidence of "done", when it abandons an approach; distill those recurring strategies into English skill prompts that make a weaker agent — Claude Opus 5.5, Sonnet 5.5, Haiku 5.5, a GPT-class model, an open-weight model, anything that reads a system prompt — reason more like the stronger one. The output is not code. It is a set of carefully written prompts, to be grounded in trace evidence as case runs land.
 
 ## How it works
 
@@ -69,7 +69,7 @@ Every `skills/<name>/` has the same two files:
 
 ## Install
 
-These are prompts, not code — there is nothing to build or execute. Install them one of three ways.
+These are prompts, not code — there is nothing to build or execute. Install them one of these ways.
 
 **Claude Code plugin** — adds the marketplace and installs every skill (manifests in `.claude-plugin/` follow the [plugin](https://code.claude.com/docs/en/plugins) and [marketplace](https://code.claude.com/docs/en/plugin-marketplaces) schema; skills are auto-discovered from `skills/<name>/SKILL.md`):
 
@@ -92,6 +92,12 @@ Options: `sh -s -- --copy` copies the directories instead of symlinking (for env
 hey, install this: https://github.com/rlaope/ultraprompt
 ```
 
+**Codex and other Agent Skills clients** — the skills use only the [Agent Skills](https://agentskills.io/specification) frontmatter fields (`name`, `description`), so the same directories load unchanged where that format is read. Point the installer at the client's skills directory, for example Codex's user directory:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/rlaope/ultraprompt/main/install.sh | CLAUDE_SKILLS_DIR="$HOME/.agents/skills" sh
+```
+
 Load the axes you need, not all twelve — each skill is independent, and stacking all of them inflates context for little gain on a task that stresses only one or two.
 
 ### Use with agents other than Claude Code
@@ -105,8 +111,8 @@ The skills are self-contained English with no Claude Code-specific syntax in the
 ## Contributing
 
 - Author or change a skill against `skills/_TEMPLATE.md`; new axes go through `_SIMULATION.md` first.
-- Run `sh scripts/validate-skills.sh` before opening a pull request. It checks frontmatter, the verbatim status line, section order, the 120-220 line budget, template leftovers, README links, and manifest version parity. CI runs the same script plus an installer smoke test on every push and pull request.
-- Never invent a trace-evidence row. `CASES.md` rows come from real sessions only: run `python3 tools/extract_trace.py <session>.jsonl` on the Claude Code transcript (`~/.claude/projects/<project>/<session>.jsonl`), which writes the normalized trace to the gitignored `based/traces/` and prints `<session-id>@<digest12>` for the row's Session cell. `tools/check_cases.py` (run by the validator) rejects any row without that citation, and, where `based/traces/` exists, any row whose trace is missing or no longer matches its digest.
+- Run `sh scripts/validate-skills.sh` before opening a pull request. It checks frontmatter (including the Agent Skills limits: lowercase `name` up to 64 characters, `description` up to 1,024, no keys outside the spec), the verbatim status line, section order, the 120-220 line budget, template leftovers, README links, and manifest version parity. CI runs the same script, `claude plugin validate --strict` on the manifests, the tool tests, and installer smoke tests (including an install into `~/.agents/skills`) on every push and pull request.
+- Never invent a trace-evidence row. `CASES.md` rows come from real sessions only: run `python3 tools/extract_trace.py <session>.jsonl` (or the bare session id) on the Claude Code transcript (`~/.claude/projects/<project>/<session>.jsonl`; subagent transcripts beside it are picked up), which writes the normalized trace to the gitignored `based/traces/` and prints `<session-id>@<digest12>` for the row's Session cell. `tools/check_cases.py` (run by the validator) rejects any row without that citation, and, where `based/traces/` exists, any row whose trace is missing, no longer matches its digest, or has no Fable 5.1 turn in it.
 
 ## Repository structure
 
@@ -114,6 +120,7 @@ The skills are self-contained English with no Claude Code-specific syntax in the
 ultraprompt/
 ├── README.md                      # this file — the front page of the published repo
 ├── CHANGELOG.md
+├── LICENSE                        # MIT
 ├── _SIMULATION.md                 # how a new axis becomes a skill: protocol, quality bar, provenance
 ├── install.sh                     # one-line installer: link/copy skills into ~/.claude/skills, --uninstall
 ├── scripts/
