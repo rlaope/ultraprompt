@@ -15,6 +15,8 @@ import extract_trace  # noqa: E402
 import trace  # noqa: E402
 
 FIXTURE = os.path.join(HERE, "fixtures", "session.jsonl")
+MODERN = os.path.join(HERE, "fixtures", "modern.jsonl")
+OPUS = os.path.join(HERE, "fixtures", "opus.jsonl")
 HEADER = "| Case | Session | Task / domain | Distinctness shown vs existing axes | What it confirmed / contradicted / refined |\n|---|---|---|---|---|\n"
 
 
@@ -42,6 +44,63 @@ class ExtractTest(unittest.TestCase):
         self.assertEqual(t["stats"]["tools"], {"Bash": 1, "Edit": 1})
         self.assertEqual(t["stats"]["first_edit_seq"], 4)
         self.assertEqual(t["digest"], trace.digest(t["events"]))
+        self.assertEqual(t["schema"], 2)
+        self.assertEqual(t["events"][0]["source"], "human")
+        self.assertEqual(t["stats"]["models"], {"claude-fable-5-1": 4})
+        self.assertEqual(t["stats"]["subagents"], 0)
+
+    def test_modern_transcript(self):
+        """Claude Code 2.1.29x+: origin.kind, peer hand-backs, compaction, subagent files."""
+        t = extract_trace.build(MODERN)
+        ev = t["events"]
+        main = [e for e in ev if "agent" not in e]
+        self.assertEqual([(e["kind"], e.get("source")) for e in main], [
+            ("prompt", "human"),       # attachment and the isMeta skill body are dropped
+            ("thinking", None),        # the empty, signature-only block is counted, not kept
+            ("tool_call", None),
+            ("tool_result", None),
+            ("prompt", "peer"),        # isMeta, but a peer hand-back is input the model acts on
+            ("compaction", None),
+            ("prompt", "task"),
+            ("text", None),            # <synthetic> API error turn
+            ("text", None),
+        ])
+        self.assertTrue(main[3]["persisted"])
+        sub = [e for e in ev if e.get("agent") == "a1"]
+        self.assertEqual(sub[0]["kind"], "subagent")
+        self.assertEqual(sub[0]["agent_type"], "general-purpose")
+        self.assertEqual(sub[0]["spawned_by"], "m-t1")
+        self.assertEqual([e["kind"] for e in sub[1:]], ["prompt", "tool_call", "tool_result", "text"])
+        self.assertEqual([e["seq"] for e in ev], list(range(len(ev))))
+        s = t["stats"]
+        self.assertEqual(s["thinking_omitted"], 1)
+        self.assertEqual(s["compactions"], 1)
+        self.assertEqual(s["subagents"], 1)
+        self.assertEqual(s["persisted_outputs"], 1)
+        self.assertEqual(s["prompts"], {"human": 2, "peer": 1, "task": 1})
+        self.assertEqual(s["models"], {"<synthetic>": 1, "claude-fable-5-1": 2, "claude-opus-5-5": 2})
+        self.assertEqual(s["tools"], {"Agent": 1, "Bash": 1})
+        self.assertEqual(t["model"], "claude-fable-5-1")  # ties break on first seen; <synthetic> never wins
+        self.assertEqual(trace.source_model_turns(t), 2)
+
+    def test_no_subagents_flag(self):
+        t = extract_trace.build(MODERN, subagents=False)
+        self.assertFalse(any("agent" in e for e in t["events"]))
+        self.assertEqual(t["stats"]["subagents"], 0)
+
+    def test_resolve_session_id(self):
+        home = tempfile.mkdtemp()
+        try:
+            proj = os.path.join(home, "projects", "-tmp-demo")
+            os.makedirs(proj)
+            shutil.copy(FIXTURE, os.path.join(proj, "0000aaaa-fixture.jsonl"))
+            os.environ["CLAUDE_CONFIG_DIR"] = home
+            self.assertEqual(extract_trace.resolve("0000aaaa-fixture"),
+                             os.path.join(proj, "0000aaaa-fixture.jsonl"))
+            self.assertIsNone(quiet(extract_trace.resolve, "nope")[0])
+        finally:
+            os.environ.pop("CLAUDE_CONFIG_DIR", None)
+            shutil.rmtree(home)
 
 
 class CheckCasesTest(unittest.TestCase):
@@ -98,6 +157,25 @@ class CheckCasesTest(unittest.TestCase):
     def test_placeholder_next_to_real_row_fails(self):
         self.write_cases(["_awaiting case runs_", "—", "—", "—", "—"], ["C01", self.cite, "x", "y", "z"])
         self.assertEqual(self.run_check()[0], 1)
+
+    def test_non_source_model_trace_fails(self):
+        rc, out = quiet(extract_trace.main, [OPUS, "--out-dir", self.traces])
+        self.assertEqual(rc, 0)
+        self.write_cases(["C01", out.strip(), "x", "y", "z"])
+        rc, out = self.run_check()
+        self.assertEqual(rc, 1)
+        self.assertIn("source model", out)
+
+    def test_schema1_trace_still_verifies(self):
+        path = os.path.join(self.traces, self.cite.split("@")[0] + ".json")
+        t = trace.load(path)
+        t["schema"] = 1
+        del t["stats"]["models"]  # schema 1 had no per-model counts; the model check is skipped
+        with open(path, "w") as fh:
+            json.dump(t, fh)
+        self.write_cases(["C01", self.cite, "x", "y", "z"])
+        rc, out = self.run_check()
+        self.assertEqual(rc, 0, out)
 
     def test_format_only_without_traces(self):
         shutil.rmtree(os.path.join(self.root, "based"))

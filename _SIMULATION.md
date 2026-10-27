@@ -16,12 +16,19 @@ This document is the protocol; `_TEMPLATE.md` is the shape the output must take.
 2. **Run a real Fable 5.1 session on it.**
    Actually execute the task with Fable 5.1 — not a thought experiment, not a paraphrase. Let the model
    work end to end. The session is the primary source; everything downstream is derived from it.
+   Start it interactively as `claude --model claude-fable-5-1` with `"showThinkingSummaries": true` in the
+   Claude Code settings: the docs say interactive sessions otherwise receive redacted thinking. In
+   `claude -p` runs (Claude Code 2.1.311) the transcript stored no thinking text with either value, so
+   headless runs are not case runs. `extract_trace.py` reports how many thinking blocks arrived without
+   text; a trace that is mostly signatures supports claims about tool sequence, not about reasoning.
 
 3. **Capture the reasoning trace.**
    Record the event trace: what the agent observed, what it decided, where it corrected, what it verified.
    Store it as case evidence. The trace — not your recollection of it — is what a `CASES.md` row cites.
-   Run `python3 tools/extract_trace.py <session>.jsonl`: it writes the normalized trace to `based/traces/`
-   (local, never published) and prints `<session-id>@<digest12>`, the exact value for the row's Session cell.
+   Run `python3 tools/extract_trace.py <session>.jsonl` (or just the session id): it writes the normalized
+   trace, subagent transcripts included, to `based/traces/` (local, never published) and prints
+   `<session-id>@<digest12>`, the exact value for the row's Session cell. `check_cases.py` rejects a cited
+   trace with no Fable 5.1 turn in it.
 
 4. **Distill the strategy axis (strategy, not domain).**
    Extract the repeating decision pattern and name it as a *strategy* that transfers across domains, never
