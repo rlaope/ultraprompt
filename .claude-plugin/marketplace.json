@@ -20,7 +20,8 @@
         "reasoning",
         "fable-5.1"
       ],
-      "category": "productivity"
+      "category": "productivity",
+      "license": "MIT"
     }
   ]
 }

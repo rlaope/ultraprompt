@@ -78,6 +78,9 @@ AUTHORING RULES (delete this block in real skill files):
 - Every skills/<name>/ ships SKILL.md AND CASES.md (trace-evidence log). Copy the
   CASES.md shape from any existing skill; never invent a row. The Session cell is
   the <session-id>@<digest12> printed by tools/extract_trace.py.
+- Frontmatter stays inside the Agent Skills spec (name, description, license, compatibility,
+  metadata, allowed-tools): claude.ai uploads and the Skills API reject any other key, and
+  description is capped at 1,024 characters there (Claude Code's listing cap is 1,536).
 - Run scripts/validate-skills.sh before opening a PR; CI runs the same check.
 - Optional strategy-specific sections (a checklist, a selection guide) may be
   inserted between the core sections when the strategy needs them; the core

@@ -8,12 +8,14 @@
   },
   "homepage": "https://github.com/rlaope/ultraprompt",
   "repository": "https://github.com/rlaope/ultraprompt",
+  "license": "MIT",
   "keywords": [
     "skills",
     "prompting",
     "coding-agent",
     "reasoning",
     "fable-5.1",
-    "claude-code"
+    "claude-code",
+    "agent-skills"
   ]
 }
