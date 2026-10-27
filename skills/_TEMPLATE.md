@@ -66,8 +66,8 @@ Exit: <which stop condition fired and what evidence closed the loop>.
 AUTHORING RULES (delete this block in real skill files):
 - English only. Direct, dense, zero marketing fluff.
 - 120-220 lines per finished skill file.
-- The quality test: pasting this file into the system prompt of a weaker agent (Claude Opus 5,
-  Sonnet 5, a GPT-class or open-weight model) should measurably change how it works on a
+- The quality test: pasting this file into the system prompt of a weaker agent (Claude Opus 5.5,
+  Sonnet 5.5, Haiku 5.5, a GPT-class or open-weight model) should measurably change how it works on a
   matching task. If a section wouldn't change behavior, cut it.
 - Skills map 1:1 to strategy axes. Core eight: exploration-strategy,
   hypothesis-management, verification-discipline, tradeoff-articulation,
